@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	
+		<title> Sala de chat </title> 
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> 
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<style>
+	.columnaIzq{
+	background:#ccc; 
+	width:30%;
+	}
+	.columnaDer{
+	background:#888; 
+	width:70%;
+	}
+	.mensajes{
+	padding:20px;
+	width:40%;
+	overflow:hidden;
+	margin:5px;
+	background:white;
+	}
+	.mensajes span{
+	color:blue;
+	background:white;
+	padding-right:5px;
+	}
+	.yo{
+	float:right;
+	}
+	</style>
+	</head>
+	<body >
+	
+	<div class="col-sm-12" id="salaChat" style="display:none;">
+	<div class="row col-sm-12" style="width:100%;" >
+		<div class="columnaIzq" style="">
+		<ul id="usuarios">
+		</ul>
+		</div>
+		<div class="columnaDer" >
+		<div class="col-sm-12" id="mensajes">
+			
+			
+		</div>
+		<div class="col-sm-12" style="width:100%; overflow:hidden;">
+			<input type="text" id="texto" class="form-control"  onkeyup="escribo()"/><!--aquí sabe que está escribiendo-->
+			<button type="button" class="btn btn-primary" onclick="addMensaje()">Enviar</button>
+		</div>
+		
+		</div>
+	</div>
+	
+			<button type="button" class="btn btn-primary" onclick="removeUsuario()">Salir</button>
+	</div>
+
+	<!-- Button trigger modal -->
+<button type="button" id="ingresar" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Ingresar al chat
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Bienvenido</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="miUsuario" placeholder="Nickname" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="addUsuario()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+</div>
+	
+	
+	<script>
+	var usuarios=["pepe", "juan", "jose", "luis"];<!-- array con la lista de usuarios que más adelante será cogida de la base de datos -->
+	var miUsuario="";<!-- se inicializa la variable miUsuario vacía -->
+	
+	<!-- función lista de usuarios -->
+	listaUsuarios=function(){
+	document.getElementById("usuarios").innerHTML=""; <!-- se coje del documento lo guardado en el id "usuarios" -->
+	for(var i=0;i< usuarios.length; i++){<!-- se recorren toda la lista de usuarios con un for -->
+	if(usuarios[i] == miUsuario){
+	document.getElementById("usuarios").innerHTML+="<li>YO - "+usuarios[i]+"</li>";}<!-- Cuando el usuario es miUsuario, se escribe un YO delante de la conversación -->
+	else{
+	document.getElementById("usuarios").innerHTML+="<li>"+usuarios[i]+"</li>";<!--si es un usuario cualquiera, se pone el nombre delante de la conversación-->
+	}
+	}
+	}
+	listaUsuarios();
+	
+	var escribiendo=false;<!--se define la variable escribiendo para indicar cuando un usuario está escribiendo un mensaje-->
+	
+	escribiendoUsuario=function(usuario){ <!--se define la función escribiendoUsuario-->
+		
+		document.getElementById("usuarios").innerHTML="";<!--de nuevo se coge la variable con el id usuario del documento-->
+			
+		for(var i=0;i< usuarios.length; i++){<!--se vuelve a recorrer el array de usuarios-->
+			if(usuario == usuarios[i]){<!--¿?¿?¿?¿?¿?¿?no entiendo esta condición que hace que se señale que se está escribiendo>
+				if(usuarios[i] == miUsuario){ <!--cuando el usuario es miUsuario se pone el YO delante,si no, no, como anteriormente-->
+					document.getElementById("usuarios").innerHTML+="<li>YO - "+usuarios[i]+" escribiendo...</li>";
+					}
+				else{
+					document.getElementById("usuarios").innerHTML+="<li>"+usuarios[i]+" escribiendo...</li>";
+					}
+				}
+			else{<!--¿?¿?¿?¿?¿?cuando no se cumple la condción que no entiendo, no aparece lo de escribiendo¿?¿?¿?¿?¿?¿?¿-->
+				if(usuarios[i] == miUsuario){
+					document.getElementById("usuarios").innerHTML+="<li>YO - "+usuarios[i]+"</li>";
+					}
+				else{
+					document.getElementById("usuarios").innerHTML+="<li>"+usuarios[i]+"</li>";
+					}
+				}
+			}	
+		escribiendo=true;
+		setTimeout(function(){
+			escribiendo=false;
+			},1500)<!--escribiendo se sigue mostrando segundo y medio después de que se acaba de escribir-->
+	}
+	
+	escribo=function(){
+		escribiendoUsuario(miUsuario)
+		setTimeout(function(){
+		if(escribiendo==false){listaUsuarios();}
+		},2000)
+	}
+	
+	addUsuario=function(){
+	var nickname=document.getElementById("miUsuario").value.toLowerCase();<!--esto es para logearse.La variable qu se escribe en el recuadro es el nickname, es miUsuario. Lo que se escrbe se pasa a minúsculas para poder comparar independientemente de si escribimos el usuario en M´s o m´s-->
+	//alert(nickname)
+	var existe=false;<!-- se inicializa la variable existe como falsa-->
+	for(var i=0;i< usuarios.length; i++){
+	if((usuarios[i] == nickname) || (nickname == '')){<!--si uno de los usuarios que ya están logeados coincide con el nickname o el nickname es vacío, no deja logearse-->
+		existe=true; <!--en ese caso, la variable existe pasa a true-->
+	}
+	}
+	if((existe == false) && (usuarios.length < 10)){
+	miUsuario=nickname;<!--si el usuario no existe y hay menos de diez usuarios logeados,nickname es miUsuario-->
+	usuarios.push(nickname)<!--lo muestra-->
+	document.getElementById("ingresar").style.display = "none";<!--una vez qe hemos ingresado, ya no aparece el botón ingresar-->
+	document.getElementById("salaChat").style.display = "block";<!--id sala chat queda block-->
+	$('#exampleModal').modal('hide')<!--el exampleModal, que es el recuadro para logearse, desaparece, se esconde-->
+	
+	var mensaje="Se acaba de conectar.";<!--cuando un usuario se conecta, aparece un mensaje tras el nombre de dicho usuario para indicarlo-->
+	//alert(nickname)
+	var msj={"usuario":" "+nickname, "mensaje":mensaje} <!--en la variable msj queda compuesto el mensaje entero-->
+	
+	
+	
+	mensajes.push(msj);<!--se muestra el mensaje-->
+	listaMensajes()
+	}
+	listaUsuarios(); 
+	}
+	
+	removeUsuario=function(){<!--se define esta función como el caso contrario a la función addUsuario, para indicar también con un mensaje que el usuario ha salido-->
+	 
+	 document.getElementById("miUsuario").value='';
+	for(var i=0;i< usuarios.length; i++){
+	if((usuarios[i] == miUsuario) ){
+		//splice
+		usuarios.splice(i, 1);//el usuario i se borra de la lista con splice
+		break;//parar el for
+	}
+	}
+	
+	document.getElementById("ingresar").style.display = "block";//en este caso, cuando se sale del chat, se bloquea el botón de ingresar y la sala chat ya no aparece
+	document.getElementById("salaChat").style.display = "none";
+	
+	var mensaje="Se acaba de desconectar.";
+	var msj={"usuario":" "+miUsuario, "mensaje":mensaje}//se construye el mensaje para cuando un usuario abandona el chat
+	miUsuario="";//la variable miUsuario queda vacía
+	mensajes.push(msj);//se muestra el mensaje
+	listaMensajes();
+	
+	
+	listaUsuarios(); 
+	}
+	var mensajes=[//elemento json. esto va a ser provisional, ya que los mensajes se crearán a tiempo real
+	{	//posición0 del array mensajes
+		"usuario":"pepe",
+		"mensaje":"hola"
+	},
+	{	//posición1 del array mensajes
+		"usuario":"luis",
+		"mensaje":"buenas tardes a todos"
+	},
+	{	//posición2 del array mensajes
+		"usuario":"ana",
+		"mensaje":"qué tal?"
+	},
+	{	//posición3 del array mensajes
+		"usuario":"maría",
+		"mensaje":"cómo va eso?"
+	}
+	
+	]
+	
+	listaMensajes=function(){//se define la función listaMensajes
+	document.getElementById("mensajes").innerHTML="";//cogemos el id mensajes del documento
+	for(var i=0;i< mensajes.length; i++){
+	if(mensajes[i].usuario == miUsuario){//se recorren las posiciones del array mensajes y si el objeto json usuario coincide con miUsuario se cumple la condiciòn
+	//se muestra el objeto mensaje de la posción que corresponda
+	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12" style="overflow:hidden;"><div class=" mensajes yo"><span>Yo</span> '+mensajes[i].mensaje+'</div></div>';
+	}
+	else{
+	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12" ><div class=" mensajes"><span>'+mensajes[i].usuario+'</span> '+mensajes[i].mensaje+'</div></div>';
+	}
+	}
+	}
+	listaMensajes()
+	
+	
+	addMensaje=function(){
+	
+	var mensaje=document.getElementById("texto").value;
+	//alert(nickname)
+	var msj={"usuario":miUsuario, "mensaje":mensaje}
+	
+	mensajes.push(msj);
+	listaMensajes();
+	document.getElementById("texto").value='';
+	}
+	</script>
+	
+	
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+	
+	</body>
+
+</html>

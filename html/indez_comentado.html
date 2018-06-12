@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	
+		<title> Practica 1 UPNA </title> 
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> 
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<style>
+	
+	<!-- Se añaden los estilos correspondientes a diferentes clases -->
+	.columnaIzq{
+	background:#ccc; 
+	width:30%;
+	}
+	.columnaDer{
+	background:#888; 
+	width:70%;
+	}
+	.mensajes{
+	padding:20px;
+	width:40%;
+	margin:5px;
+	background:white;
+	}
+	<!-- estos mensajes no se cuales son -->
+	.mensajes span{
+	color:blue;
+	background:white;
+	padding-right:5px;
+	}
+	.yo{
+	float:right;
+	}
+	</style>
+	</head>
+	<body >
+	<!-- damos forma a la pagina. -->
+	<div class="col-sm-12">
+	<div class="row col-sm-12" style="width:100%;" >
+	<!-- La columna de la izquierda va a corresponder a la lista de usuarios que están conectados -->
+		<div class="columnaIzq" style="">
+		<!-- se define el id usuarios -->
+		<ul id="usuarios"> 
+		</ul>
+		</div>
+	<!-- La columna de la derecha va a corresponder a la conversación. -->
+		<div class="columnaDer" >
+		<!-- Se define el identificador mensajes -->
+		<div class="col-sm-12" id="mensajes">
+			
+			<div class="col-sm-4 mensajes" ><span>Juan</span>hola..</div>
+			<div class="col-sm-4 mensajes" ><span>Jose</span>hey..</div>
+			<div class="col-sm-4 mensajes" ><span>Pepe</span>como van..</div>
+			<div class="col-sm-4 mensajes yo" ><span>Yo</span>como van..</div>
+		</div>
+		<div class="col-sm-12" style="width:100%; overflow:hidden;">
+			<input type="text" id="texto" class="form-control" />
+			<button type="button" class="btn btn-primary" onclick="addMensaje()">Enviar</button>
+		</div>
+		
+		</div>
+	</div>
+	</div>
+
+	<!-- Button trigger modal -->
+	<!-- se define el id ingresar -->
+<button type="button" id="ingresar" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Ingresar al chat
+</button>
+
+<!-- esto es para ingresar al chat -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Bienvenido</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="miUsuario" placeholder="Nickname" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="addUsuario()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+</div>
+	
+	<!-- empieza el código con los requisitos marcados por el enunciado del proyecto -->
+	
+	<script>
+	<!-- primero se definen las variables usuarios y miUsuario -->
+	var usuarios=["pepe", "juan", "jose", "luis"];  <!-- este array es provisional. luego se sustituye por base de datos. -->
+	var miUsuario="";
+	<!-- se define la función listaUsuarios -->
+	listaUsuarios=function(){
+	document.getElementById("usuarios").innerHTML="";<!-- se llama a la id usuarios previamente definida -->
+	for(var i=0;i< usuarios.length; i++){<!-- se va recorriendo la lista de usuarios -->
+	if(usuarios[i] == miUsuario){
+	document.getElementById("usuarios").innerHTML+="<li>YO - "+usuarios[i]+"</li>";}<!-- cuando el usuario sea miUsuario se pone delante un YO -->
+	else{
+	document.getElementById("usuarios").innerHTML+="<li>"+usuarios[i]+"</li>";<!-- si no se pone el nombre del usuario correspondiente -->
+	}
+	}
+	}
+	listaUsuarios();
+	
+	
+	addUsuario=function(){
+	var nickname=document.getElementById("miUsuario").value.toLowerCase(); <!-- el nombre introducido se pasa a minúsculas siempre para poder comprobar el match independientemente de si son mayúsculas o minúsculas y se guarda en la variable nickname-->
+	//alert(nickname)
+	var existe=false;
+	for(var i=0;i< usuarios.length; i++){
+	if((usuarios[i] == nickname) || (nickname == '')){<!-- se comprueba si el nickname corresponde a algun usuario ya iniciado o si no se introduce nada, entonces existe es true y no deja ingresar -->
+		existe=true;
+	}
+	}
+	if((existe == false) && (usuarios.length < 10)){<!-- se comprueba si no existe y que además haya menos de diez usuarios para que deje ingresar -->
+	miUsuario=nickname;
+	usuarios.push(nickname)<!-- añade un elemento al array usuarios -->
+	document.getElementById("ingresar").style.display = "none";
+	$('#exampleModal').modal('hide')
+	
+	var mensaje="Se acaba de conectar.";
+	//alert(nickname)
+	var msj={"usuario":" "+nickname, "mensaje":mensaje}
+	
+	mensajes.push(msj);
+	listaMensajes()
+	}
+	listaUsuarios(); 
+	}
+	
+	var mensajes=[<!-- objeto json -->
+	{	
+		"usuario":"pepe",
+		"mensaje":"hola"
+	},
+	{	
+		"usuario":"luis",
+		"mensaje":"hola a todos"
+	}
+	]
+	
+	listaMensajes=function(){
+	document.getElementById("mensajes").innerHTML="";
+	for(var i=0;i< mensajes.length; i++){
+	if(mensajes[i].usuario == miUsuario){
+	document.getElementById("mensajes").innerHTML+='<div class="col-sm-4 mensajes yo" ><span>Yo</span> '+mensajes[i].mensaje+'</div>';
+	}
+	else{
+	document.getElementById("mensajes").innerHTML+='<div class="col-sm-4 mensajes" ><span>'+mensajes[i].usuario+'</span> '+mensajes[i].mensaje+'</div>';
+	}
+	}
+	}
+	listaMensajes()
+	
+	
+	addMensaje=function(){
+	
+	var mensaje=document.getElementById("texto").value;
+	//alert(nickname)
+	var msj={"usuario":miUsuario, "mensaje":mensaje}
+	
+	mensajes.push(msj);
+	listaMensajes()
+	}
+	</script>
+	
+	
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+	
+	</body>
+
+</html>
