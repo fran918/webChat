@@ -59,7 +59,6 @@
 	}
 	
 	escribo=function(){
-		
 		   socket.emit("escribo",miId);
 	}
 	
@@ -95,7 +94,6 @@
            //console.log(data);
 	listaMensajes();
 	socket.emit("listaMensajes",msj);
-	
 		   socket.emit("listaUsuarios",msj);
         });
 	
