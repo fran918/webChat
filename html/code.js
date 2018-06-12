@@ -65,9 +65,13 @@
 	addUsuario=function(){
 	var nickname=document.getElementById("miUsuario").value.toLowerCase();
 	//alert(nickname)
+	$.get("http://localhost:8000/api/get-users", function(data, status){
+		
+		usuarios=data
+		
 	var existe=false;
 	for(var i=0;i< usuarios.length; i++){
-	if((usuarios[i] == nickname) || (nickname == '')){
+	if((usuarios[i].nickname == nickname) || (nickname == '')){
 		existe=true;
 	}
 	}
@@ -97,7 +101,10 @@
 		   socket.emit("listaUsuarios",msj);
         });
 	
+	}else{
+		alert("por favor cambia tu nickname")
 	}
+        });
 	}
 	
 	removeUsuario=function(){
@@ -136,18 +143,21 @@
 	listaMensajes=function(){
 	
 	$.get("http://localhost:8000/api/get-mensajes", function(data, status){
+		if(data && mensajes){
 		document.getElementById("mensajes").innerHTML="";
            //console.log(data);
 		   mensajes=data.reverse();
-	for(var i=0;i< 6; i++){
-	if(mensajes[i].usuario == miUsuario){
+	for(var i=0;i< 6; i++){{
+		if(mensajes[i])
+	if((mensajes[i].usuario == miUsuario)){
 	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12" style="overflow:hidden;"><div class=" mensajes yo"><span>Yo</span> '+mensajes[i].mensaje+'</div></div>';
 	}
 	else{
 	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12" ><div class=" mensajes"><span>'+mensajes[i].usuario+'</span> '+mensajes[i].mensaje+'</div></div>';
 	}
 	}
-	
+	}
+	}
         });
 	}
 	listaMensajes()
