@@ -68,7 +68,7 @@
 	$.get("http://localhost:8000/api/get-users", function(data, status){
 		
 		usuarios=data
-		
+		console.log(data)
 	var existe=false;
 	for(var i=0;i< usuarios.length; i++){
 	if((usuarios[i].nickname == nickname) || (nickname == '')){
@@ -149,11 +149,12 @@
 		   mensajes=data.reverse();
 	for(var i=0;i< 6; i++){{
 		if(mensajes[i])
-	if((mensajes[i].usuario == miUsuario)){
-	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12" style="overflow:hidden;"><div class=" mensajes yo"><span>Yo</span> '+mensajes[i].mensaje+'</div></div>';
+	if((mensajes[i].usuario == miUsuario)){ 
+	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12 text" style="overflow:hidden;"><div class=" mensajes yo"><span>Yo</span> <p class="text">'+mensajes[i].mensaje+ '  </p></div></div>';
+	
 	}
 	else{
-	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12" ><div class=" mensajes"><span>'+mensajes[i].usuario+'</span> '+mensajes[i].mensaje+'</div></div>';
+	document.getElementById("mensajes").innerHTML+='<div class="col-sm-12 text" ><div class=" mensajes"><span>'+mensajes[i].usuario+'</span> > <p class="text">'+mensajes[i].mensaje+'  </p></div></div>';
 	}
 	}
 	}
@@ -165,7 +166,7 @@
 	
 	addMensaje=function(){
 	
-	var mensaje=document.getElementById("texto").value;
+	var mensaje=document.getElementById("texto").innerHTML; 
 	//alert(nickname)
 	var msj={"usuario":miUsuario, "mensaje":mensaje}
 	
@@ -176,10 +177,15 @@
 		   
 		   //
 	listaMensajes();
-	document.getElementById("texto").value='';
+	document.getElementById("texto").innerHTML='';
         });
 	}
-	
+	eliminar_usuario=function(){
+		var id=document.getElementById("idEliminar").value;
+		$.post("http://localhost:8000/api/delete-user/"+id,{nickname:"mar", status:false} ,function(data, status){
+           alert("eliminado")
+        });
+	}
 	
 	pedir=function(){
 	/*$.post("http://localhost:8000/api/add-user",{nickname:"ff", status:true} ,function(data, status){
@@ -219,5 +225,17 @@ socket.on('escribiendo', function (data) {
 		setTimeout(function(){
 		if(escribiendo==false){listaUsuarios();}
 		},2000)
+});
+
+socket.on('desconectar', function (data) {
+var nickname=document.getElementById("miUsuario").value.toLowerCase();
+$.post("http://localhost:8000/api/add-user",{nickname:nickname, status:true} ,function(data, status){
+           console.log(data);
+		$.get("http://localhost:8000/api/get-users", function(data, status){
+			listaUsuarios(); 
+  refreshUsuarios();
+        });
+        });
+ 
 });
   

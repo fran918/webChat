@@ -6,7 +6,8 @@ var morgan = require('morgan');
 var proxy = require('express-http-proxy');
 var cors = require('cors');
 var mongodb = require("mongodb").MongoClient;
-var url = "mongodb://localhost:27017/test";
+var baseDatos="test3"
+var url = "mongodb://localhost:27017/"+baseDatos;
 
 var api=require("./api/api.js")
 
@@ -62,6 +63,24 @@ io.on('connection', function (socket) {
 		console.log('-------*---------');
 	  
 	});
+	socket.on('disconnect', function(data) {
+		 
+	mongodb.connect(url, function(err, db){
+	if(err) throw err;
+	console.log("iniciando MONGODB") 
+	 var dbo = db.db(baseDatos);
+	 dbo.collection("users").drop(function(err, respuesta){
+		// if(err) throw err;
+		 console.log("se elimino todos los usuarios"); 
+		socket.broadcast.emit('desconectar', { "id": data });
+		socket.emit('desconectar', { "id": data });
+		console.log("data")
+		db.close();
+	 })
+	 
+})  
+		
+   });
   }); 
 
 app.get('/',function(req,res){
